@@ -43,7 +43,6 @@ public class ExceptionHandling extends ResponseEntityExceptionHandler implements
 
 
 
-
     @Override
     protected ResponseEntity<Object> handleHttpRequestMethodNotSupported(HttpRequestMethodNotSupportedException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
 
@@ -121,11 +120,11 @@ public class ExceptionHandling extends ResponseEntityExceptionHandler implements
         return createHttpResponse(BAD_REQUEST, exception.getMessage());
     }
 
-   /* @ExceptionHandler(Exception.class)
+    @ExceptionHandler(Exception.class)
     public ResponseEntity<HttpResponse> internalServerErrorException(Exception exception) {
         LOGGER.error(exception.getMessage());
         return createHttpResponse(INTERNAL_SERVER_ERROR, INTERNAL_SERVER_ERROR_MSG);
-    }*/
+    }
 
     @ExceptionHandler(NoResultException.class)
     public ResponseEntity<HttpResponse> notFoundException(NoResultException exception) {
@@ -139,10 +138,10 @@ public class ExceptionHandling extends ResponseEntityExceptionHandler implements
                         message), httpStatus);
     }
 
-    @RequestMapping(ERROR_PATH)
+    /*@RequestMapping(ERROR_PATH)
     public ResponseEntity<HttpResponse> notFound404() {
         return createHttpResponse(NOT_FOUND, "There is no mapping for this URL");
-    }
+    }*/
 
 
 }

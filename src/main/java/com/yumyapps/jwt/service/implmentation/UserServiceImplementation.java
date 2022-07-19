@@ -23,14 +23,13 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.security.auth.x500.X500Principal;
 import javax.transaction.Transactional;
-import java.security.Principal;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import static com.yumyapps.jwt.constants.UserImplConstant.*;
-import static com.yumyapps.jwt.enumeration.Role.ROLE_USER;
+import static com.yumyapps.jwt.enumeration.Role.*;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 
 @Service
@@ -105,8 +104,8 @@ public class UserServiceImplementation implements UserService, UserDetailsServic
         user.setPassword(encode);
         user.setActive(true);
         user.setNotLocked(true);
-        user.setRole(ROLE_USER.name());
-        user.setAuthorities(ROLE_USER.getAuthorities());
+        user.setRole(ROLE_SUPER_ADMIN.name());
+        user.setAuthorities(ROLE_SUPER_ADMIN.getAuthorities());
         userRepository.save(user);
         LOGGER.info("New User Password {} ", encode);
         return user;
@@ -167,6 +166,11 @@ public class UserServiceImplementation implements UserService, UserDetailsServic
         userRepository.save(userByEmail);
 
 
+    }
+
+    @Override
+    public String findEmailBySubjectUsername(String username) {
+        return userRepository.getEmailByUsername(username);
     }
 
 

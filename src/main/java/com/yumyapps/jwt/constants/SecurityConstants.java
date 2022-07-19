@@ -11,6 +11,8 @@ public class SecurityConstants {
     public static final String FORBIDDEN_MESSAGE = "You need to log in to access this page";
     public static final String ACCESS_DENIED_MESSAGE = "You do not have permission to access this page";
     public static final String OPTIONS_HTTP_METHOD = "OPTIONS";
-    public static final String[] PUBLIC_URLS = {"/users/login", "/users/register", "/users/image/**","/graphiql/**","/graphql/**"};
+    public static final String[] PUBLIC_URLS = {"/v1/users/login", "/v1/users/register", "/v1/users/image/**",
+            "/graphiql/**", "/graphql/**", "/swagger-ui/**", "/v2/api-docs", "/swagger-resources/**", "/webjars/**"};
     //public static final String[] PUBLIC_URLS = {"**"};
+    public static final String[] OPEN_API_URLS = { "/v2/api-docs", "/swagger-resources/**", "/swagger-ui/**", "/webjars/**" };
 }

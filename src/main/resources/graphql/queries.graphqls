@@ -1,0 +1,5 @@
+scalar Long
+
+type Query{
+    message(value: Long): String
+}

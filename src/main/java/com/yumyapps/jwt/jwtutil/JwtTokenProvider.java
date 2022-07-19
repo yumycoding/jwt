@@ -87,6 +87,11 @@ public class JwtTokenProvider {
         return StringUtils.isNotEmpty(userName) && !isTokenExpired(verifier, token);
     }
 
+    public Date getTokenExpiryDate(String token) {
+        JWTVerifier verifier = getJwtVerifier();
+        return verifier.verify(token).getExpiresAt();
+    }
+
     private boolean isTokenExpired(JWTVerifier verifier, String token) {
         Date expiration = verifier.verify(token).getExpiresAt();
         return expiration.before(new Date());

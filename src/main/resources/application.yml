@@ -12,6 +12,9 @@ spring:
       idle-timeout: 30000
       max-lifetime: 1800000
       connection-timeout: 20000
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
   jpa:
     hibernate:
       ddl-auto: update
@@ -26,6 +29,13 @@ spring:
         enabled: true #if we want to see the field data type
       printer:
         enabled: true
+  application:
+    name: login-api
 jwt:
   security:
     key: '^+$Guidelines89797987forAlphabetical'
+
+server:
+  port: 8200
+  error:
+    path: /error
