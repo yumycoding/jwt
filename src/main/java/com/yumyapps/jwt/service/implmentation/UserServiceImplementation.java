@@ -151,7 +151,8 @@ public class UserServiceImplementation implements UserService, UserDetailsServic
     @Override
     public void deleteUser(String username) {
         User user = userRepository.findUserByUsername(username).orElseThrow(() -> new UserNotFoundException("Invalid Username"));
-        userRepository.deleteById(user.getId());
+        user.setActive(false);
+        userRepository.save(user);
     }
 
     @Override
