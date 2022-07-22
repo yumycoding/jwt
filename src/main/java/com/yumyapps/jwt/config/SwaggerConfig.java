@@ -14,7 +14,7 @@ import springfox.documentation.swagger.web.*;
 import java.util.Collections;
 import java.util.List;
 
-import static com.yumyapps.jwt.constants.SwaggerConstant.*;
+import static com.yumyapps.jwt.constants.Constants.*;
 import static java.util.Collections.singletonList;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static springfox.documentation.spi.DocumentationType.SWAGGER_2;

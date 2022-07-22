@@ -1,7 +1,7 @@
 package com.yumyapps.jwt.enumeration;
 
 
-import static com.yumyapps.jwt.constants.Authority.*;
+import static com.yumyapps.jwt.constants.Constants.*;
 
 public enum Role {
 

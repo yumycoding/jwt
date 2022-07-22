@@ -1,12 +1,13 @@
 package com.yumyapps.jwt.controller;
 
 
-import com.yumyapps.jwt.constants.SwaggerConstant;
+import com.yumyapps.jwt.constants.Constants;
 import com.yumyapps.jwt.dto.TokenInformation;
+import com.yumyapps.jwt.dto.UserRegistrationDto;
 import com.yumyapps.jwt.exception.ExceptionHandling;
-import com.yumyapps.jwt.exception.domain.EmailExistException;
-import com.yumyapps.jwt.exception.domain.UserNotFoundException;
-import com.yumyapps.jwt.exception.domain.UsernameExistException;
+import com.yumyapps.jwt.exception.exceptions.EmailExistException;
+import com.yumyapps.jwt.exception.exceptions.UserNotFoundException;
+import com.yumyapps.jwt.exception.exceptions.UsernameExistException;
 import com.yumyapps.jwt.jwtutil.JwtTokenProvider;
 import com.yumyapps.jwt.models.User;
 import com.yumyapps.jwt.models.http.HttpResponse;
@@ -30,23 +31,22 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
-import static com.yumyapps.jwt.constants.SecurityConstants.JWT_TOKEN_HEADER;
-import static com.yumyapps.jwt.constants.SecurityConstants.TOKEN_PREFIX;
-import static com.yumyapps.jwt.constants.UserImplConstant.USER_DELETED_SUCCESSFULLY;
+
+import static com.yumyapps.jwt.constants.Constants.*;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 import static org.springframework.http.HttpStatus.OK;
 
 
 @RestController
-@Api(tags = {SwaggerConstant.API_TAG})
+@Api(tags = {Constants.API_TAG})
 @RequestMapping(path = "/v1/users")
-public class UserResource extends ExceptionHandling {
+public class UserController extends ExceptionHandling {
 
     private final UserService userService;
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public UserResource(UserService userService, AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider) {
+    public UserController(UserService userService, AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider) {
         this.userService = userService;
         this.authenticationManager = authenticationManager;
         this.jwtTokenProvider = jwtTokenProvider;
@@ -112,7 +112,7 @@ public class UserResource extends ExceptionHandling {
             @ApiResponse(responseCode = "401", description = "You don't have permission to this resource")
     })
     @PostMapping(path = "/register")
-    public ResponseEntity<String> registerNewUser(@ApiParam(value = "User to be saved", required = true) @Valid @RequestBody User user) throws UserNotFoundException, EmailExistException, UsernameExistException {
+    public ResponseEntity<String> registerNewUser(@ApiParam(value = "Please provide the firstName ,lastName ,username, password , email", required = true) @Valid @RequestBody UserRegistrationDto user) throws UserNotFoundException, EmailExistException, UsernameExistException {
         User registeredUser = userService.register(user.getFirstName(), user.getLastName(), user.getUsername(), user.getEmail(), user.getPassword());
         return new ResponseEntity<>("Account is registered Successfully with username " + registeredUser.getUsername() + " , Please Login! ", null, OK);
     }
@@ -164,7 +164,7 @@ public class UserResource extends ExceptionHandling {
             @ApiResponse(responseCode = "403", description = "You are not authorized. Please authenticate and try again"),
             @ApiResponse(responseCode = "401", description = "You don't have permission to this resource")
     })
-    @PreAuthorize("hasAnyAuthority('user:read')")
+    @PreAuthorize("hasAuthority('user:read')")
     @PostMapping("/updatePassword")
     public String updateUserPassword(@ApiParam(value = "Enter existing email")
                                      @RequestParam("email") String email,

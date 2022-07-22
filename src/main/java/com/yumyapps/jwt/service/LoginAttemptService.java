@@ -43,9 +43,7 @@ public class LoginAttemptService {
 
         loginAttemptCache.put(username, attempts);
         try {
-
-
-            System.out.println("total attempts of " + username + " : " + loginAttemptCache.get(username));
+            log.info("total attempts of {} are {} ", username, loginAttemptCache.get(username));
         } catch (ExecutionException e) {
             e.printStackTrace();
         }

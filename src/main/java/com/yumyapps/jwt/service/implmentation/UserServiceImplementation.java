@@ -2,15 +2,17 @@ package com.yumyapps.jwt.service.implmentation;
 
 
 import com.yumyapps.jwt.enumeration.Role;
-import com.yumyapps.jwt.exception.domain.EmailExistException;
-import com.yumyapps.jwt.exception.domain.EmailNotFoundException;
-import com.yumyapps.jwt.exception.domain.UserNotFoundException;
-import com.yumyapps.jwt.exception.domain.UsernameExistException;
+import com.yumyapps.jwt.exception.ExceptionHandling;
+import com.yumyapps.jwt.exception.exceptions.EmailExistException;
+import com.yumyapps.jwt.exception.exceptions.EmailNotFoundException;
+import com.yumyapps.jwt.exception.exceptions.UserNotFoundException;
+import com.yumyapps.jwt.exception.exceptions.UsernameExistException;
 import com.yumyapps.jwt.models.User;
 import com.yumyapps.jwt.security.UserPrincipal;
 import com.yumyapps.jwt.repository.UserRepository;
 import com.yumyapps.jwt.service.LoginAttemptService;
 import com.yumyapps.jwt.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -26,12 +28,12 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
-import static com.yumyapps.jwt.constants.UserImplConstant.*;
+import static com.yumyapps.jwt.constants.Constants.*;
 import static com.yumyapps.jwt.enumeration.Role.*;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 
+@Slf4j
 @Service
 @Transactional
 @Qualifier("userDetailsService")
@@ -90,24 +92,25 @@ public class UserServiceImplementation implements UserService, UserDetailsServic
 
     @Override
     public User register(String firstName, String lastName, String username, String email, String password) throws UserNotFoundException, EmailExistException, UsernameExistException {
-
-        validateNewUserAndEmail(EMPTY, username, email);
         User user = new User();
-        user.setUserId(generatedUserId());
-        user.setFirstName(firstName);
-        user.setLastName(lastName);
-        user.setUsername(username);
-        user.setEmail(email);
-        user.setJoinDate(new Date());
 
-        var encode = encodedPassword(password);
-        user.setPassword(encode);
-        user.setActive(true);
-        user.setNotLocked(true);
-        user.setRole(ROLE_SUPER_ADMIN.name());
-        user.setAuthorities(ROLE_SUPER_ADMIN.getAuthorities());
-        userRepository.save(user);
-        LOGGER.info("New User Password {} ", encode);
+            validateNewUserAndEmail(EMPTY, username, email);
+            user.setUserId(generatedUserId());
+            user.setFirstName(firstName);
+            user.setLastName(lastName);
+            user.setUsername(username);
+            user.setEmail(email);
+            user.setJoinDate(new Date());
+
+            var encode = encodedPassword(password);
+            user.setPassword(encode);
+            user.setActive(true);
+            user.setNotLocked(true);
+            user.setRole(ROLE_SUPER_ADMIN.name());
+            user.setAuthorities(ROLE_SUPER_ADMIN.getAuthorities());
+            userRepository.save(user);
+            LOGGER.info("New User Password {} ", encode);
+
         return user;
     }
 

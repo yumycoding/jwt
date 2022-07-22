@@ -7,6 +7,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.yumyapps.jwt.security.UserPrincipal;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -21,7 +22,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.yumyapps.jwt.constants.SecurityConstants.*;
+import static com.yumyapps.jwt.constants.Constants.*;
 import static java.util.Arrays.stream;
 
 
@@ -52,7 +53,7 @@ public class JwtTokenProvider {
         return authorities.toArray(new String[0]);
     }
 
-    public List<GrantedAuthority> getAuthorities(String token) {
+    public List<GrantedAuthority> getAuthorities(@NotNull String token) {
         String[] claims = getClaimsFromToken(token);
         assert claims != null;
         return stream(claims).map(SimpleGrantedAuthority::new)
@@ -60,7 +61,7 @@ public class JwtTokenProvider {
 
     }
 
-    private String[] getClaimsFromToken(String token) {
+    private String[] getClaimsFromToken(@NotNull String token) {
         JWTVerifier verifier = getJwtVerifier();
         return verifier.verify(token).getClaim(AUTHORITIES).asArray(String.class);
     }
@@ -76,7 +77,7 @@ public class JwtTokenProvider {
         return verifier;
     }
 
-    public String getSubject(String token) {
+    public String getSubject(@NotNull String token) {
         JWTVerifier jwtVerifier = getJwtVerifier();
         return jwtVerifier.verify(token).getSubject();
     }
@@ -87,12 +88,13 @@ public class JwtTokenProvider {
         return StringUtils.isNotEmpty(userName) && !isTokenExpired(verifier, token);
     }
 
-    public Date getTokenExpiryDate(String token) {
+    public Date getTokenExpiryDate(@NotNull String token) {
+
         JWTVerifier verifier = getJwtVerifier();
         return verifier.verify(token).getExpiresAt();
     }
 
-    private boolean isTokenExpired(JWTVerifier verifier, String token) {
+    private boolean isTokenExpired(@NotNull JWTVerifier verifier, String token) {
         Date expiration = verifier.verify(token).getExpiresAt();
         return expiration.before(new Date());
     }

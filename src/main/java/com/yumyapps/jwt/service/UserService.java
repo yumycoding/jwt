@@ -1,6 +1,6 @@
 package com.yumyapps.jwt.service;
 
-import com.yumyapps.jwt.exception.domain.*;
+import com.yumyapps.jwt.exception.exceptions.*;
 import com.yumyapps.jwt.models.User;
 
 import java.io.IOException;

@@ -16,8 +16,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 
-import static com.yumyapps.jwt.constants.SecurityConstants.OPTIONS_HTTP_METHOD;
-import static com.yumyapps.jwt.constants.SecurityConstants.TOKEN_PREFIX;
+import static com.yumyapps.jwt.constants.Constants.OPTIONS_HTTP_METHOD;
+import static com.yumyapps.jwt.constants.Constants.TOKEN_PREFIX;
 
 @Component
 public class JwtAuthorizationFilter extends OncePerRequestFilter {

@@ -2,10 +2,10 @@ package com.yumyapps.jwt.exception;
 
 import com.auth0.jwt.exceptions.TokenExpiredException;
 
-import com.yumyapps.jwt.exception.domain.EmailExistException;
-import com.yumyapps.jwt.exception.domain.EmailNotFoundException;
-import com.yumyapps.jwt.exception.domain.UserNotFoundException;
-import com.yumyapps.jwt.exception.domain.UsernameExistException;
+import com.yumyapps.jwt.exception.exceptions.EmailExistException;
+import com.yumyapps.jwt.exception.exceptions.EmailNotFoundException;
+import com.yumyapps.jwt.exception.exceptions.UserNotFoundException;
+import com.yumyapps.jwt.exception.exceptions.UsernameExistException;
 import com.yumyapps.jwt.models.http.HttpResponse;
 import com.yumyapps.jwt.models.http.HttpValidationResponse;
 import com.yumyapps.jwt.models.http.ValidatorResponseMessage;
@@ -23,7 +23,6 @@ import org.springframework.security.authentication.LockedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
@@ -33,15 +32,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import static com.yumyapps.jwt.constants.ExceptionConstants.*;
+import static com.yumyapps.jwt.constants.Constants.*;
 import static org.springframework.http.HttpStatus.*;
 
 @RestControllerAdvice
 public class ExceptionHandling extends ResponseEntityExceptionHandler implements ErrorController {
 
     private final Logger LOGGER = LoggerFactory.getLogger(getClass());
-
-
 
     @Override
     protected ResponseEntity<Object> handleHttpRequestMethodNotSupported(HttpRequestMethodNotSupportedException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
@@ -120,11 +117,11 @@ public class ExceptionHandling extends ResponseEntityExceptionHandler implements
         return createHttpResponse(BAD_REQUEST, exception.getMessage());
     }
 
-    @ExceptionHandler(Exception.class)
+   /* @ExceptionHandler(Exception.class)
     public ResponseEntity<HttpResponse> internalServerErrorException(Exception exception) {
         LOGGER.error(exception.getMessage());
         return createHttpResponse(INTERNAL_SERVER_ERROR, INTERNAL_SERVER_ERROR_MSG);
-    }
+    }*/
 
     @ExceptionHandler(NoResultException.class)
     public ResponseEntity<HttpResponse> notFoundException(NoResultException exception) {

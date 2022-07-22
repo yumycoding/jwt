@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'com.yumyapps'
-version = '0.0.1-SNAPSHOT'
+version = '1.0'
 sourceCompatibility = '11'
 
 configurations {
@@ -29,6 +29,7 @@ dependencies {
     implementation group: 'com.auth0', name: 'java-jwt', version: '4.0.0'
     implementation group: 'com.google.guava', name: 'guava', version: '31.1-jre'
     implementation group: 'io.springfox', name: 'springfox-boot-starter', version: '3.0.0'
+    implementation 'org.jetbrains:annotations:23.0.0'
 
     runtimeOnly 'mysql:mysql-connector-java'
     compileOnly 'org.projectlombok:lombok'
@@ -42,6 +43,8 @@ dependencies {
 }
 
 
+/*
 tasks.named('test') {
     useJUnitPlatform()
 }
+*/

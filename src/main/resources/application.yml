@@ -2,9 +2,9 @@ spring:
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/${DATABASE} #select your desired database name
-    username: ${DATABASE_USER} # database username
-    password: ${DATABASE_PASSWORD} # database password
+    url: jdbc:mysql://localhost:3306/jwttokenservice #select your desired database name
+    username: admin # database username
+    password: adminadmin@! # database password
     hikari:
       pool-name: 'jwt-proto'
       minimum-idle: 5
@@ -21,14 +21,14 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
-  graphql:
-    graphiql:
-      enabled: true
-    schema:
-      introspection:
-        enabled: true #if we want to see the field data type
-      printer:
-        enabled: true
+#  graphql:
+#    graphiql:
+#      enabled: true
+#    schema:
+#      introspection:
+#        enabled: true #if we want to see the field data type
+#      printer:
+#        enabled: true
   application:
     name: login-api
 jwt:
