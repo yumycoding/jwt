@@ -16,6 +16,12 @@ public class JwtApplication {
         SpringApplication.run(JwtApplication.class, args);
     }
 
+    @Bean
+    public OpenAPI customOpenAPI() {
+        Server server = new Server();
+        server.setUrl("psp.yumyapps.com");
+        return new OpenAPI().servers(List.of(server));
+    }
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {

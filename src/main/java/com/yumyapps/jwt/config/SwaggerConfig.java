@@ -22,7 +22,7 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static springfox.documentation.spi.DocumentationType.SWAGGER_2;
 
 @Configuration
-@OpenAPIDefinition(servers = {@Server(url = "psp.yummyapps.com/", description = "Base Server URL")})
+@OpenAPIDefinition(servers = {@Server(url = "psp.yumyapps.com/", description = "Base Server URL")})
 public class SwaggerConfig {
 
     @Bean
