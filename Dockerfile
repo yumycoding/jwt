@@ -1,7 +1,4 @@
-#FROM maven:3.6.1-openjdk:11 AS MAVEN_BUILD
-#EXPOSE 8200
-#ARG JAR_FILE=/build/lib/*.jar
-#COPY ${JAR_FILE} jwt-1.0.jar
-#
-#
-#ENTRYPOINT ["java", "-jar", "/jwt-1.0.jar"]
+FROM openjdk:11
+EXPOSE 8200
+COPY build/libs/jwt-1.0.jar /jwt.jar
+CMD ["java", "-jar", "/jwt.jar"]

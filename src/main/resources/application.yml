@@ -2,8 +2,8 @@ spring:
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/jwttokenservice #select your desired database name
-    username: admin # database username
+    url: jdbc:mysql://${DATABASE_HOST}/jwttokenservice #select your desired database name
+    username: root # database username
     password: adminadmin@! # database password
     hikari:
       pool-name: 'jwt-proto'

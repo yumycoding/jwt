@@ -75,7 +75,7 @@ public class UserController extends ExceptionHandling {
         return new ResponseEntity<>(information, jwtHeader, OK);
     }
 
-    @ApiOperation(value = "Add a new user", notes = "Add a new user information into the system", response = User.class)
+    @ApiOperation(value = "User Information", notes = "Add a new user information into the system", response = User.class)
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Information fetched successfully"),
             @ApiResponse(responseCode = "201", description = "Information fetched successfully"),
