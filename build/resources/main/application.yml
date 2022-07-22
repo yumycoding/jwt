@@ -21,14 +21,14 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
-#  graphql:
-#    graphiql:
-#      enabled: true
-#    schema:
-#      introspection:
-#        enabled: true #if we want to see the field data type
-#      printer:
-#        enabled: true
+  #  graphql:
+  #    graphiql:
+  #      enabled: true
+  #    schema:
+  #      introspection:
+  #        enabled: true #if we want to see the field data type
+  #      printer:
+  #        enabled: true
   application:
     name: login-api
 jwt:
@@ -39,3 +39,9 @@ server:
   port: 8200
   error:
     path: /error
+
+springfox:
+  documentation:
+    swagger:
+      v2:
+        host: psp.yummyapps.com
