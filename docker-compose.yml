@@ -1,0 +1,29 @@
+version: "3.0"
+
+services:
+  docker-mysql:
+    image: mysql:latest
+    environment:
+      - MYSQL_ROOT_PASSWORD=adminadmin@!
+      - MYSQL_DATABASE=jwttokenservice
+      - MYSQL_PASSWORD=adminadmin@!
+    ports:
+      - "3306:3306"
+    networks:
+      - login-mysql
+
+  login-api:
+    image: login-api
+    container_name: login-api-container
+    ports:
+      - "8200:8200"
+    networks:
+      - login-mysql
+    depends_on:
+      - docker-mysql
+    environment:
+      - DATABASE_HOST=docker-mysql
+
+networks:
+  login-mysql:
+    driver: bridge
