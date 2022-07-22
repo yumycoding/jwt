@@ -52,7 +52,7 @@ public class UserController extends ExceptionHandling {
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
-    @ApiOperation(value = "Add a new user", notes = "Add a new user information into the system", response = User.class)
+    @ApiOperation(value = "User login", notes = "Add username and password to login into the system", response = User.class)
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "The User login Successfully"),
             @ApiResponse(responseCode = "201", description = "The User login Successfully"),
