@@ -15,6 +15,7 @@ services:
   login-api:
     image: login-api
     container_name: login-api-container
+    restart: always
     ports:
       - "8200:8200"
     networks:
