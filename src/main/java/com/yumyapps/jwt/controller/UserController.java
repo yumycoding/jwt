@@ -4,6 +4,7 @@ package com.yumyapps.jwt.controller;
 import com.yumyapps.jwt.constants.Constants;
 import com.yumyapps.jwt.dto.TokenInformation;
 import com.yumyapps.jwt.dto.UserRegistrationDto;
+import com.yumyapps.jwt.dto.UserUpgradeDto;
 import com.yumyapps.jwt.exception.ExceptionHandling;
 import com.yumyapps.jwt.exception.exceptions.EmailExistException;
 import com.yumyapps.jwt.exception.exceptions.UserNotFoundException;
@@ -30,7 +31,6 @@ import javax.validation.Valid;
 import java.io.IOException;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
-
 
 import static com.yumyapps.jwt.constants.Constants.*;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
@@ -101,7 +101,7 @@ public class UserController extends ExceptionHandling {
     }
 
 
-    @ApiOperation(value = "Add a new user", notes = "Add a new user information into the system", response = User.class)
+    @ApiOperation(value = "Add a new user", notes = "Add a new user information into the system", response = UserRegistrationDto.class)
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "The User saved Successfully"),
             @ApiResponse(responseCode = "201", description = "The User Created Successfully"),
@@ -118,14 +118,7 @@ public class UserController extends ExceptionHandling {
     }
 
 
-    @PreAuthorize("hasAnyAuthority('user:create','user:update')")
-    @PostMapping(path = "/unlock")
-    public String unlockUserAccount(@RequestParam(name = "email") String email) {
-        userService.unlockAccount(email);
-        return "account associated with email " + email + " unlock successfully";
-    }
-
-    @ApiOperation(value = "Update an existing User", notes = "Update User by passing in the User information with an existing username and email address", response = User.class)
+    @ApiOperation(value = "Update an existing User", notes = "Update User by passing in the User information with an existing username and email address", response = UserUpgradeDto.class)
     @ApiResponses({@ApiResponse(responseCode = "200", description = "The user was updated successfully"),
             @ApiResponse(responseCode = "400", description = "The request is malformed or invalid"),
             @ApiResponse(responseCode = "404", description = "The resource URL was not found on the server"),
@@ -133,26 +126,21 @@ public class UserController extends ExceptionHandling {
             @ApiResponse(responseCode = "403", description = "You are not authorized. Please authenticate and try again"),
             @ApiResponse(responseCode = "401", description = "You don't have permission to this resource")
     })
+
     @PreAuthorize("hasAnyAuthority('user:update')")
     @PostMapping("/update")
-    public ResponseEntity<User> updateUserInfo(@ApiParam(value = "Please enter  existing username")
-                                               @RequestParam("currentUsername") String currentUsername,
-                                               @ApiParam(value = "Please enter  Firstname")
-                                               @RequestParam(value = "firstName") String firstName,
-                                               @ApiParam(value = "Please enter  Lastname")
-                                               @RequestParam(value = "lastName") String lastName,
-                                               @ApiParam(value = "Please enter desired username")
-                                               @RequestParam("username") String username,
-                                               @ApiParam(value = "Please enter desired email address")
-                                               @RequestParam("email") String email,
-                                               @ApiParam(value = "Please set the user role")
-                                               @RequestParam(value = "role") String role,
-                                               @ApiParam(value = "Set the Account Active or disable by entering true/false")
-                                               @RequestParam(value = "isActive") String isActive,
-                                               @ApiParam(value = "Set the Account lock or unlock by entering true/false")
-                                               @RequestParam(value = "isNonLocked") String isNonLocked) throws IOException {
-        User updatedUser = userService.updateUser(currentUsername, firstName, lastName, username, email, role, Boolean.parseBoolean(isNonLocked), Boolean.parseBoolean(isActive));
+    public ResponseEntity<User> updateUserInfo(@ApiParam(value = "Please provide the username ,firstname ,lastname, email", required = true) @Valid @RequestBody UserUpgradeDto user) throws IOException {
+        User updatedUser = userService.updateUser(user.getCurrentUsername(), user.getNewFirstName(), user.getNewLastName(), user.getCurrentUsername(),
+                user.getNewEmailAddress(), user.getNewRole(), Boolean.parseBoolean(user.getIsNotLocked()), Boolean.parseBoolean(user.getIsActive()));
         return new ResponseEntity<>(updatedUser, OK);
+    }
+
+
+    @PreAuthorize("hasAnyAuthority('user:create','user:update')")
+    @PostMapping(path = "/unlock")
+    public String unlockUserAccount(@RequestParam(name = "email") String email) {
+        userService.unlockAccount(email);
+        return "account associated with email " + email + " unlock successfully";
     }
 
 
@@ -182,7 +170,7 @@ public class UserController extends ExceptionHandling {
             throw new UserNotFoundException("Invalid Email Address " + email);
     }
 
-    @ApiOperation(value = "Find an user by email address", notes = "Retrieve User info by passing the email address", response = User.class)
+    @ApiOperation(value = "Find the user by username", notes = "Retrieve User info by passing the username", response = User.class)
     @ApiResponses({@ApiResponse(responseCode = "200", description = "The User against email address"),
             @ApiResponse(responseCode = "400", description = "The request is malformed or invalid"),
             @ApiResponse(responseCode = "404", description = "The resource URL was not found on the server"),

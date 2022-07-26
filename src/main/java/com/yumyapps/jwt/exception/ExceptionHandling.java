@@ -20,14 +20,17 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.LockedException;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import javax.persistence.NoResultException;
+import javax.validation.ConstraintViolationException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -36,6 +39,7 @@ import static com.yumyapps.jwt.constants.Constants.*;
 import static org.springframework.http.HttpStatus.*;
 
 @RestControllerAdvice
+@Validated
 public class ExceptionHandling extends ResponseEntityExceptionHandler implements ErrorController {
 
     private final Logger LOGGER = LoggerFactory.getLogger(getClass());
@@ -100,6 +104,15 @@ public class ExceptionHandling extends ResponseEntityExceptionHandler implements
     public ResponseEntity<HttpResponse> emailNotFoundException(EmailNotFoundException exception) {
         return createHttpResponse(BAD_REQUEST, exception.getMessage());
     }
+
+
+
+
+        @ExceptionHandler(value = {ConstraintViolationException.class})
+        protected ResponseEntity<Object> handleConstraintViolation(ConstraintViolationException e, WebRequest request) {
+            return handleExceptionInternal(e, e.getMessage(), new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
+        }
+
 
     //
 //// this exception belongs to application properties -- Throw the Exception If no Handler found

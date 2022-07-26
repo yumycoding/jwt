@@ -94,33 +94,32 @@ public class UserServiceImplementation implements UserService, UserDetailsServic
     public User register(String firstName, String lastName, String username, String email, String password) throws UserNotFoundException, EmailExistException, UsernameExistException {
         User user = new User();
 
-            validateNewUserAndEmail(EMPTY, username, email);
-            user.setUserId(generatedUserId());
-            user.setFirstName(firstName);
-            user.setLastName(lastName);
-            user.setUsername(username);
-            user.setEmail(email);
-            user.setJoinDate(new Date());
+        validateNewUserAndEmail(EMPTY, username, email);
+        user.setUserId(generatedUserId());
+        user.setFirstName(firstName);
+        user.setLastName(lastName);
+        user.setUsername(username);
+        user.setEmail(email);
+        user.setJoinDate(new Date());
 
-            var encode = encodedPassword(password);
-            user.setPassword(encode);
-            user.setActive(true);
-            user.setNotLocked(true);
-            user.setRole(ROLE_SUPER_ADMIN.name());
-            user.setAuthorities(ROLE_SUPER_ADMIN.getAuthorities());
-            userRepository.save(user);
-            LOGGER.info("New User Password {} ", encode);
+        var encode = encodedPassword(password);
+        user.setPassword(encode);
+        user.setActive(true);
+        user.setNotLocked(true);
+        user.setRole(ROLE_SUPER_ADMIN.name());
+        user.setAuthorities(ROLE_SUPER_ADMIN.getAuthorities());
+        userRepository.save(user);
+        LOGGER.info("New User Password {} ", encode);
 
         return user;
     }
 
     @Override
     public User updateUser(String currentUsername, String newFirstName, String newLastName, String newUsername, String newEmail, String role, boolean isNonLocked, boolean isActive) throws UserNotFoundException, UsernameExistException, EmailExistException {
-        User currentUser = validateNewUserAndEmail(currentUsername, newUsername, newEmail);
+        User currentUser = validateUpdateUser(currentUsername,newEmail);
         assert currentUser != null;
         currentUser.setFirstName(newFirstName);
         currentUser.setLastName(newLastName);
-        currentUser.setUsername(newUsername);
         currentUser.setEmail(newEmail);
         currentUser.setActive(isActive);
         currentUser.setNotLocked(isNonLocked);
@@ -192,6 +191,25 @@ public class UserServiceImplementation implements UserService, UserDetailsServic
         return RandomStringUtils.randomNumeric(10);
     }
 
+
+    private User validateUpdateUser(String currentUserName, String email) {
+
+        if (StringUtils.isNotBlank(currentUserName) && StringUtils.isNotBlank(email)) {
+
+            User currentUser = findUserByUsername(currentUserName);
+            User userByNewEmail = findUserByEmail(email);
+
+            if (currentUser == null) {
+                throw new UserNotFoundException(NO_USER_FOUND_BY_USERNAME + currentUserName);
+            }
+            if (userByNewEmail != null) {
+                throw new EmailExistException(EMAIL_ALREADY_EXISTS);
+            }
+            return currentUser;
+        } else {
+            return null;
+        }
+    }
 
     private User validateNewUserAndEmail(String currentUserName, String newUserName, String emailAddress) throws UserNotFoundException, UsernameExistException, EmailExistException {
 
