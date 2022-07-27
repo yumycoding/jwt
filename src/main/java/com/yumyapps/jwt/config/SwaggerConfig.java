@@ -1,5 +1,7 @@
 package com.yumyapps.jwt.config;
 
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.servers.Server;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,6 +22,7 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static springfox.documentation.spi.DocumentationType.SWAGGER_2;
 
 @Configuration
+@OpenAPIDefinition(servers = {@Server(url = "psp.yumyapps.com/", description = "Base Server URL")})
 public class SwaggerConfig {
 
     @Bean

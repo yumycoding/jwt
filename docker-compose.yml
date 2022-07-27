@@ -24,7 +24,7 @@ services:
       - docker-mysql
     environment:
       - DATABASE_HOST=docker-mysql
-
+      - SWAGGER_BASE_URL=psp.yumyapps.com
 networks:
   login-mysql:
     driver: bridge
