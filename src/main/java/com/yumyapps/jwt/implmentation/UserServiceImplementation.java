@@ -24,6 +24,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -71,21 +72,29 @@ public class UserServiceImplementation implements UserService, UserDetailsServic
         if (user.isNotLocked()) {
             if (loginAttemptService.hasExceededMaxAttempts(userName)) {
                 user.setNotLocked(false);
+                log.info("{ } account is locked after multiply login attempts", userName);
             } else {
                 user.setNotLocked(true);
             }
         } else {
-            throw new LockedException("");
+            throw new LockedException("Account is temporary locked, please contact admin");
             //loginAttemptService.activeUserFromLoginAttemptCache(userName);
         }
     }
 
     @Override
     public void unlockAccount(String email) {
+
         var user = userRepository.findUserByEmail(email).orElseThrow(() -> new EmailNotFoundException("Invalid Email"));
-        user.setNotLocked(true);
-        userRepository.save(user);
-        loginAttemptService.activeUserFromLoginAttemptCache(user.getUsername());
+        try {
+            user.setNotLocked(true);
+            userRepository.save(user);
+            loginAttemptService.activeUserFromLoginAttemptCache(user.getUsername());
+            log.info("{ } account is unlocked successfully", user.getUsername());
+        } catch (Exception e) {
+            log.error("Invalid Email or System Error", e.getMessage());
+
+        }
     }
 
     @Override
@@ -93,26 +102,29 @@ public class UserServiceImplementation implements UserService, UserDetailsServic
         User user = new User();
 
         validateNewUserAndEmail(EMPTY, username, email);
-        user.setUserId(generatedUserId());
-        user.setFirstName(firstName);
-        user.setLastName(lastName);
-        user.setUsername(username);
-        user.setEmail(email);
-        user.setJoinDate(new Date());
+        try {
+            user.setUserId(generatedUserId());
+            user.setFirstName(firstName);
+            user.setLastName(lastName);
+            user.setUsername(username);
+            user.setEmail(email);
+            user.setJoinDate(new Date());
+            var encode = encodedPassword(password);
+            user.setPassword(encode);
+            user.setActive(true);
+            user.setNotLocked(true);
+            user.setRole(ROLE_SUPER_ADMIN.name());
+            user.setAuthorities(ROLE_SUPER_ADMIN.getAuthorities());
+            userRepository.save(user);
+            log.info("new user with username { } is registered successfully", user.getUsername());
 
-        var encode = encodedPassword(password);
-        user.setPassword(encode);
-        user.setActive(true);
-        user.setNotLocked(true);
-        user.setRole(ROLE_SUPER_ADMIN.name());
-        user.setAuthorities(ROLE_SUPER_ADMIN.getAuthorities());
-        userRepository.save(user);
-        LOGGER.info("New User Password {} ", encode);
-
+        } catch (Exception e) {
+            log.error("Error Wile Registering user", e.getMessage());
+        }
         return user;
     }
 
-    @Override
+    @Override // function not in use
     public User updateUser(String currentUsername, String newFirstName, String newLastName, String newUsername, String newEmail, String role, boolean isNonLocked, boolean isActive) throws UserNotFoundException, UsernameExistException, EmailExistException {
         User currentUser = validateUpdateUser(currentUsername, newEmail);
         assert currentUser != null;
@@ -128,36 +140,60 @@ public class UserServiceImplementation implements UserService, UserDetailsServic
     }
 
 
-
     @Override
     public List<User> getUsers() {
-        return userRepository.findAll();
+        List<User> userList = new ArrayList<>();
+        try {
+            userList = userRepository.findAll();
+            log.info("returning all users");
+        } catch (Exception e) {
+            log.error("Error wile generating user list", e.getMessage());
+        }
+        return userList;
     }
 
     @Override
     public User findUserByUsername(String username) {
-        return userRepository.findUserByUsername(username).orElse(null);
+        var user = new User();
+        try {
+            user = userRepository.findUserByUsername(username).orElse(null);
+        } catch (Exception e) {
+            log.error("Error while fetching user with username", e.getMessage());
+        }
+        return user;
     }
 
     @Override
     public User findUserByEmail(String email) {
-        return userRepository.findUserByEmail(email).orElse(null);
+        var user = new User();
+        try {
+            user = userRepository.findUserByEmail(email).orElse(null);
+        } catch (Exception e) {
+            log.error("Error while fetching user with email", e.getMessage());
+        }
+        return user;
+
+
     }
 
 
-    @Override
+    @Override // method is not in use
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
     }
 
-    @Override
+    @Override // user soft delete method
     public void deleteUser(String username) {
         User user = userRepository.findUserByUsername(username).orElseThrow(() -> new UserNotFoundException("Invalid Username"));
-        user.setActive(false);
-        userRepository.save(user);
+        try {
+            user.setActive(false);
+            userRepository.save(user);
+        } catch (Exception e) {
+            log.error("Error While deleting user", e.getMessage());
+        }
     }
 
-    @Override
+    @Override // method is not in use. 2-factor authentication may implement
     public void resetPassword(String email, String password) throws UserNotFoundException {
 
         User userByEmail = userRepository.findUserByEmail(email).orElseThrow(() -> new EmailNotFoundException("Invalid Email"));
@@ -199,12 +235,24 @@ public class UserServiceImplementation implements UserService, UserDetailsServic
 
     @Override
     public String findEmailBySubjectUsername(String username) {
-        return userRepository.getEmailByUsername(username);
+        String email = null;
+        try {
+            email = userRepository.getEmailByUsername(username);
+        } catch (Exception e) {
+            log.error("Subject email Error", e.getMessage());
+        }
+        return email;
     }
 
     @Override
     public String getPasswordByUserName(String username) {
-        return userRepository.getPasswordByUsername(username);
+        String userPassword = null;
+        try {
+            userPassword = userRepository.getPasswordByUsername(username);
+        } catch (Exception e) {
+            log.error("Password Error", e.getMessage());
+        }
+        return userPassword;
     }
 
     private Role getRoleEnumName(String role) {
@@ -213,14 +261,24 @@ public class UserServiceImplementation implements UserService, UserDetailsServic
 
 
     private String encodedPassword(String password) {
-        return passwordEncoder.encode(password);
+        String newEncodedPassword;
+
+        if (StringUtils.isNotBlank(password)) {
+            newEncodedPassword = passwordEncoder.encode(password);
+            return newEncodedPassword;
+        } else {
+            throw new NullPointerException("Password is Empty or Null");
+        }
     }
 
 
     private boolean verifyPassword(String username, String oldPassword) {
-        String passwordByUsername = getPasswordByUserName(username);
-        return passwordEncoder.matches(oldPassword, passwordByUsername);
-
+        boolean result = false;
+        if (StringUtils.isNotBlank(username) && StringUtils.isNotBlank(oldPassword)) {
+            String passwordByUsername = getPasswordByUserName(username);
+            result = passwordEncoder.matches(oldPassword, passwordByUsername);
+        }
+        return result;
     }
 
 
@@ -248,7 +306,8 @@ public class UserServiceImplementation implements UserService, UserDetailsServic
         }
     }
 
-    private User validateNewUserAndEmail(String currentUserName, String newUserName, String emailAddress) throws UserNotFoundException, UsernameExistException, EmailExistException {
+    private User validateNewUserAndEmail(String currentUserName, String newUserName, String emailAddress) throws
+            UserNotFoundException, UsernameExistException, EmailExistException {
 
         User userByNewUsername = findUserByUsername(newUserName);
         User userByNewEmail = findUserByEmail(emailAddress);
