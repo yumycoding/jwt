@@ -72,7 +72,7 @@ public class UserServiceImplementation implements UserService, UserDetailsServic
         if (user.isNotLocked()) {
             if (loginAttemptService.hasExceededMaxAttempts(userName)) {
                 user.setNotLocked(false);
-                log.info("{ } account is locked after multiply login attempts", userName);
+                log.info("{} account is locked after multiply login attempts", userName);
             } else {
                 user.setNotLocked(true);
             }
@@ -90,9 +90,9 @@ public class UserServiceImplementation implements UserService, UserDetailsServic
             user.setNotLocked(true);
             userRepository.save(user);
             loginAttemptService.activeUserFromLoginAttemptCache(user.getUsername());
-            log.info("{ } account is unlocked successfully", user.getUsername());
+            log.info("{} account is unlocked successfully", user.getUsername());
         } catch (Exception e) {
-            log.error("Invalid Email or System Error", e.getMessage());
+            log.error("Invalid email or system error: {}", e.getMessage());
 
         }
     }
@@ -100,8 +100,8 @@ public class UserServiceImplementation implements UserService, UserDetailsServic
     @Override
     public User register(String firstName, String lastName, String username, String email, String password) throws UserNotFoundException, EmailExistException, UsernameExistException {
         User user = new User();
-
         validateNewUserAndEmail(EMPTY, username, email);
+
         try {
             user.setUserId(generatedUserId());
             user.setFirstName(firstName);
@@ -116,10 +116,10 @@ public class UserServiceImplementation implements UserService, UserDetailsServic
             user.setRole(ROLE_SUPER_ADMIN.name());
             user.setAuthorities(ROLE_SUPER_ADMIN.getAuthorities());
             userRepository.save(user);
-            log.info("new user with username { } is registered successfully", user.getUsername());
+            log.info("new user with username {} is registered successfully", user.getUsername());
 
         } catch (Exception e) {
-            log.error("Error Wile Registering user", e.getMessage());
+            log.error("Error Wile Registering user: {}", e.getMessage());
         }
         return user;
     }
@@ -147,7 +147,7 @@ public class UserServiceImplementation implements UserService, UserDetailsServic
             userList = userRepository.findAll();
             log.info("returning all users");
         } catch (Exception e) {
-            log.error("Error wile generating user list", e.getMessage());
+            log.error("Error wile generating user list : {}", e.getMessage());
         }
         return userList;
     }
@@ -158,7 +158,7 @@ public class UserServiceImplementation implements UserService, UserDetailsServic
         try {
             user = userRepository.findUserByUsername(username).orElse(null);
         } catch (Exception e) {
-            log.error("Error while fetching user with username", e.getMessage());
+            log.error("Error while fetching user with username: {}", e.getMessage());
         }
         return user;
     }
@@ -169,7 +169,7 @@ public class UserServiceImplementation implements UserService, UserDetailsServic
         try {
             user = userRepository.findUserByEmail(email).orElse(null);
         } catch (Exception e) {
-            log.error("Error while fetching user with email", e.getMessage());
+            log.error("Error while fetching user with email : {}", e.getMessage());
         }
         return user;
 
@@ -189,7 +189,7 @@ public class UserServiceImplementation implements UserService, UserDetailsServic
             user.setActive(false);
             userRepository.save(user);
         } catch (Exception e) {
-            log.error("Error While deleting user", e.getMessage());
+            log.error("Error While deleting user : {}", e.getMessage());
         }
     }
 
@@ -210,11 +210,11 @@ public class UserServiceImplementation implements UserService, UserDetailsServic
     public boolean updatePassword(UsernamePasswordAuthenticationToken token, PasswordUpdateDto updateDto) {
 
         if (!updateDto.getNewPassword().equals(updateDto.getMatchingPassword())) {
-            log.error("the given password does not match from the user { }", token.getPrincipal());
+            log.error("the given password does not match from the user {}", token.getPrincipal());
             throw new PassowrdNotMatchException(PASSWORD_DO_NOT_MATCH);
         }
         if (updateDto.getOldPassword().equals(updateDto.getNewPassword())) {
-            log.error("old password and new passwords are same from the user { }", token.getPrincipal());
+            log.error("old password and new passwords are same from the user {}", token.getPrincipal());
             throw new OldPasswordDenialException(OLD_PASSWORD_DENIED);
         }
         try {
@@ -227,9 +227,9 @@ public class UserServiceImplementation implements UserService, UserDetailsServic
                 return true;
             }
         } catch (Exception e) {
-            log.error(e.getStackTrace().toString());
+            log.error(e.getMessage());
         }
-        log.error("invalid password, old password cannot be verified from the user { }", token.getPrincipal());
+        log.error("invalid password, old password cannot be verified from the user {}", token.getPrincipal());
         return false;
     }
 
@@ -239,7 +239,7 @@ public class UserServiceImplementation implements UserService, UserDetailsServic
         try {
             email = userRepository.getEmailByUsername(username);
         } catch (Exception e) {
-            log.error("Subject email Error", e.getMessage());
+            log.error("Subject email Error : {}", e.getMessage());
         }
         return email;
     }
@@ -250,7 +250,7 @@ public class UserServiceImplementation implements UserService, UserDetailsServic
         try {
             userPassword = userRepository.getPasswordByUsername(username);
         } catch (Exception e) {
-            log.error("Password Error", e.getMessage());
+            log.error("Password Error : {}", e.getMessage());
         }
         return userPassword;
     }
@@ -331,9 +331,9 @@ public class UserServiceImplementation implements UserService, UserDetailsServic
             if (userByNewEmail != null) {
                 throw new EmailExistException(EMAIL_ALREADY_EXISTS);
             }
-            return null;
-        }
 
+        }
+        return null;
     }
 
 

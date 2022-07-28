@@ -2,6 +2,7 @@ package com.yumyapps.jwt.controller;
 
 
 import com.yumyapps.jwt.constants.Constants;
+import com.yumyapps.jwt.dto.PasswordUpdateDto;
 import com.yumyapps.jwt.dto.UserRegistrationDto;
 import com.yumyapps.jwt.dto.http.HttpResponse;
 import com.yumyapps.jwt.exception.ExceptionHandling;
@@ -18,15 +19,16 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.io.IOException;
 import java.util.List;
 
-import static com.yumyapps.jwt.constants.Constants.USER_DELETED_SUCCESSFULLY;
-import static org.springframework.http.HttpStatus.NO_CONTENT;
-import static org.springframework.http.HttpStatus.OK;
+import static com.yumyapps.jwt.constants.Constants.*;
+import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 
 @RestController
@@ -43,20 +45,26 @@ public class UserController extends ExceptionHandling {
     }
 
 
-    @ApiOperation(value = "Add a new user", notes = "Add a new user information into the system", response = UserRegistrationDto.class)
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "The User saved Successfully"),
-            @ApiResponse(responseCode = "201", description = "The User Created Successfully"),
-            @ApiResponse(responseCode = "500", description = "Successfully retrieved list"),
+    @ApiOperation(value = "Update an existing User Password", notes = "Update  Password by passing old password and new password", response = PasswordUpdateDto.class)
+    @ApiResponses({@ApiResponse(responseCode = "200", description = "The password was updated successfully"),
             @ApiResponse(responseCode = "400", description = "The request is malformed or invalid"),
             @ApiResponse(responseCode = "404", description = "The resource URL was not found on the server"),
+            @ApiResponse(responseCode = "500", description = "An internal server error occurred"),
             @ApiResponse(responseCode = "403", description = "You are not authorized. Please authenticate and try again"),
             @ApiResponse(responseCode = "401", description = "You don't have permission to this resource")
     })
-    @PostMapping(path = "/register")
-    public ResponseEntity<String> registerNewUser(@ApiParam(value = "Please provide the firstName ,lastName ,username, password , email", required = true) @Valid @RequestBody UserRegistrationDto user) throws UserNotFoundException, EmailExistException, UsernameExistException {
-        User registeredUser = userService.register(user.getFirstName(), user.getLastName(), user.getUsername(), user.getEmail(), user.getPassword());
-        return new ResponseEntity<>("Account is registered Successfully with username " + registeredUser.getUsername() + " , Please Login! ", null, OK);
+    @PostMapping(path = "/update-password")
+    public ResponseEntity<HttpResponse> updatePassword(@ApiParam(value = "Please Ignore this bug", name = "token", hidden = true) UsernamePasswordAuthenticationToken token,
+                                                       @ApiParam(value = "Please provide old password and new password for update the password", required = true)
+                                                       @Valid @RequestBody PasswordUpdateDto updateDto
+
+    ) {
+
+        boolean result = userService.updatePassword(token, updateDto);
+
+        return result ? response(CREATED, PASSWORD_CHANGED_SUCCESSFUL)
+                : response(BAD_REQUEST, INTERNAL_SERVER_ERROR_MSG);
+
     }
 
 
