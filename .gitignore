@@ -1,6 +1,10 @@
 HELP.md
 .gradle
 build/
+<<<<<<< HEAD
+=======
+build
+>>>>>>> 59c0fe58b0ff2b9b33282f839dbbc7786aeb7fac
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
