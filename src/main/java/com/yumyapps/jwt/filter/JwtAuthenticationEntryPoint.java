@@ -1,7 +1,8 @@
 package com.yumyapps.jwt.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.yumyapps.jwt.models.http.HttpResponse;
+import com.yumyapps.jwt.dto.http.HttpResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
 import org.springframework.stereotype.Component;
@@ -16,6 +17,7 @@ import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Component
+@Slf4j
 public class JwtAuthenticationEntryPoint extends Http403ForbiddenEntryPoint {
 
     @Override
@@ -34,5 +36,6 @@ public class JwtAuthenticationEntryPoint extends Http403ForbiddenEntryPoint {
         ObjectMapper mapper = new ObjectMapper();
         mapper.writeValue(outputStream, httpResponse);
         outputStream.flush();
+        log.info("Jwt Authentication Failed");
     }
 }

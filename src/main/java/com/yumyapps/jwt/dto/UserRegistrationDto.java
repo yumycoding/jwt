@@ -13,23 +13,24 @@ import javax.validation.constraints.Size;
 public class UserRegistrationDto {
 
     @NotNull
-    @Size(min = 3, max = 50)
+    @Size(min = 3, max = 100)
     @ApiModelProperty(value = "Please enter your fist name", example = "John")
     private String firstName;
 
     @NotNull
-    @Size(min = 3, max = 50)
+    @Size(min = 3, max = 100)
     @ApiModelProperty(value = "Please enter your last name", example = "Dao")
     private String lastName;
 
     @NotNull
-    @Size(min = 5, max = 50)
+    @Size(min = 3, max = 100)
     @ApiModelProperty(value = "Please enter desired username", example = "johndao")
     private String username;
 
     @NotNull
     @NotEmpty
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @Size(min = 8)
     private String password;
 
     @NotNull

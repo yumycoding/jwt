@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.servers.Server;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
@@ -28,13 +29,16 @@ public class SwaggerConfig {
     @Bean
     public Docket apiDocket() {
         return new Docket(SWAGGER_2).apiInfo(apiInfo())
+                .ignoredParameterTypes(UsernamePasswordAuthenticationToken.class)
                 .forCodeGeneration(true)
                 .securityContexts(singletonList(securityContext()))
                 .securitySchemes(singletonList(apiKey()))
                 .select().apis(RequestHandlerSelectors.withClassAnnotation(RestController.class))
                 .paths(PathSelectors.regex(SECURE_PATH))
                 .build()
-                .tags(new Tag(API_TAG, "All APIs relating to login API"));
+                .tags(new Tag(API_TAG, "All APIs relating to User API"))
+                .tags(new Tag(AUTH_API_TAG,"All APIs relating to Auth API"))
+                ;
     }
 
     private ApiInfo apiInfo() {

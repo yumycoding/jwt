@@ -13,9 +13,12 @@ public class Constants {
     public static final String VALIDATION_FAILED = "Data Validation occurred.";
     public static final String ACCOUNT_LOCKED = "Your account has been locked. Please contact administration";
     public static final String METHOD_IS_NOT_ALLOWED = "This request method is not allowed on this endpoint. Please send a '%s' request";
-    public static final String INTERNAL_SERVER_ERROR_MSG = "An error occurred while processing the request";
+    public static final String INTERNAL_SERVER_ERROR_MSG = "An error occurred while processing the request, invalid inputs";
     public static final String INCORRECT_CREDENTIALS = "Username / password incorrect. Please try again";
     public static final String ACCOUNT_DISABLED = "Your account has been disabled. If this is an error, please contact administration";
+    public static final String OLD_PASSWORD_DENIED = "The new Password must be different from the old Password";
+    public static final String PASSWORD_DO_NOT_MATCH = "Password Does Not Match, please retype the password";
+    public static final String PASSWORD_CHANGED_SUCCESSFUL = "Password updated successfully";
     public static final String ERROR_PROCESSING_FILE = "Error occurred while processing file";
     public static final String NOT_ENOUGH_PERMISSION = "You do not have enough permission";
     public static final String ERROR_PATH = "/error";
@@ -32,7 +35,7 @@ public class Constants {
     public static final String FORBIDDEN_MESSAGE = "You need to log in to access this page";
     public static final String ACCESS_DENIED_MESSAGE = "You do not have permission to access this page";
     public static final String OPTIONS_HTTP_METHOD = "OPTIONS";
-    public static final String[] PUBLIC_URLS = {"/v1/users/login", "/v1/users/register", "/v1/users/image/**",
+   public static final String[] PUBLIC_URLS = {"/v1/auth/login", "/v1/auth/register", "/v1/users/image/**",
             "/graphiql/**", "/graphql/**", "/swagger-ui/**", "/v2/api-docs", "/swagger-resources/**", "/webjars/**"};
     //public static final String[] PUBLIC_URLS = {"**"};
     public static final String[] OPEN_API_URLS = {"/v2/api-docs", "/swagger-resources/**", "/swagger-ui/**", "/webjars/**"};
@@ -52,7 +55,8 @@ public class Constants {
     public static final String LICENSE = "Apache License 2.1.0";
     public static final String LICENSE_URL = "https://www.apache.org/licenses/LICENSE-2.0";
     public static final String SECURE_PATH = "/*/.*";
-    public static final String API_TAG = "Login API Service";
+    public static final String API_TAG = "User API Service";
+    public static final String AUTH_API_TAG = "Auth API Service";
 
     // User implementation Constants
     public static final String USERNAME_ALREADY_EXISTS = "Username already exists";

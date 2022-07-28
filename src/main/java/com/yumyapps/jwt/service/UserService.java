@@ -1,7 +1,9 @@
 package com.yumyapps.jwt.service;
 
+import com.yumyapps.jwt.dto.PasswordUpdateDto;
 import com.yumyapps.jwt.exception.exceptions.*;
 import com.yumyapps.jwt.models.User;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
 import java.io.IOException;
 import java.util.List;
@@ -23,11 +25,17 @@ public interface UserService {
             throws UserNotFoundException, UsernameExistException, IOException, NotAnImageFileException, EmailExistException;
 
 
+
     void deleteUser(Long id) throws IOException;
+
     void deleteUser(String username) throws IOException;
 
-    void resetPassword(String email,String password ) throws EmailNotFoundException, UserNotFoundException;
+    void resetPassword(String email, String password) throws EmailNotFoundException, UserNotFoundException;
 
+    boolean updatePassword(UsernamePasswordAuthenticationToken token, PasswordUpdateDto updateDto);
 
     String findEmailBySubjectUsername(String username);
+
+    String getPasswordByUserName(String username);
+
 }

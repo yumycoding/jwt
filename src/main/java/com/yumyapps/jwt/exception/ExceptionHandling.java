@@ -2,13 +2,10 @@ package com.yumyapps.jwt.exception;
 
 import com.auth0.jwt.exceptions.TokenExpiredException;
 
-import com.yumyapps.jwt.exception.exceptions.EmailExistException;
-import com.yumyapps.jwt.exception.exceptions.EmailNotFoundException;
-import com.yumyapps.jwt.exception.exceptions.UserNotFoundException;
-import com.yumyapps.jwt.exception.exceptions.UsernameExistException;
-import com.yumyapps.jwt.models.http.HttpResponse;
-import com.yumyapps.jwt.models.http.HttpValidationResponse;
-import com.yumyapps.jwt.models.http.ValidatorResponseMessage;
+import com.yumyapps.jwt.exception.exceptions.*;
+import com.yumyapps.jwt.dto.http.HttpResponse;
+import com.yumyapps.jwt.dto.http.HttpValidationResponse;
+import com.yumyapps.jwt.dto.http.ValidatorResponseMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.web.servlet.error.ErrorController;
@@ -23,7 +20,6 @@ import org.springframework.security.authentication.LockedException;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
@@ -105,8 +101,14 @@ public class ExceptionHandling extends ResponseEntityExceptionHandler implements
         return createHttpResponse(BAD_REQUEST, exception.getMessage());
     }
 
-
-
+    @ExceptionHandler(OldPasswordDenialException.class)
+    public ResponseEntity<HttpResponse> oldPasswordDenial(OldPasswordDenialException exception) {
+        return createHttpResponse(BAD_REQUEST, exception.getMessage());
+    }
+    @ExceptionHandler(PassowrdNotMatchException.class)
+    public ResponseEntity<HttpResponse> PasswordNotMatch(PassowrdNotMatchException exception) {
+        return createHttpResponse(BAD_REQUEST, exception.getMessage());
+    }
 
         @ExceptionHandler(value = {ConstraintViolationException.class})
         protected ResponseEntity<Object> handleConstraintViolation(ConstraintViolationException e, WebRequest request) {

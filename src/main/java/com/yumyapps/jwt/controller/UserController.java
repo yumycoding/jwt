@@ -2,37 +2,29 @@ package com.yumyapps.jwt.controller;
 
 
 import com.yumyapps.jwt.constants.Constants;
-import com.yumyapps.jwt.dto.TokenInformation;
 import com.yumyapps.jwt.dto.UserRegistrationDto;
-import com.yumyapps.jwt.dto.UserUpgradeDto;
+import com.yumyapps.jwt.dto.http.HttpResponse;
 import com.yumyapps.jwt.exception.ExceptionHandling;
 import com.yumyapps.jwt.exception.exceptions.EmailExistException;
 import com.yumyapps.jwt.exception.exceptions.UserNotFoundException;
 import com.yumyapps.jwt.exception.exceptions.UsernameExistException;
-import com.yumyapps.jwt.jwtutil.JwtTokenProvider;
 import com.yumyapps.jwt.models.User;
-import com.yumyapps.jwt.models.http.HttpResponse;
-import com.yumyapps.jwt.security.UserPrincipal;
 import com.yumyapps.jwt.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.io.IOException;
-import java.util.Date;
-import java.util.concurrent.TimeUnit;
+import java.util.List;
 
-import static com.yumyapps.jwt.constants.Constants.*;
+import static com.yumyapps.jwt.constants.Constants.USER_DELETED_SUCCESSFULLY;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 import static org.springframework.http.HttpStatus.OK;
 
@@ -43,61 +35,11 @@ import static org.springframework.http.HttpStatus.OK;
 public class UserController extends ExceptionHandling {
 
     private final UserService userService;
-    private final AuthenticationManager authenticationManager;
-    private final JwtTokenProvider jwtTokenProvider;
 
-    public UserController(UserService userService, AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider) {
+
+    public UserController(UserService userService) {
         this.userService = userService;
-        this.authenticationManager = authenticationManager;
-        this.jwtTokenProvider = jwtTokenProvider;
-    }
 
-    @ApiOperation(value = "User login", notes = "Add username and password to login into the system", response = User.class)
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "The User login Successfully"),
-            @ApiResponse(responseCode = "201", description = "The User login Successfully"),
-            @ApiResponse(responseCode = "500", description = "Internal Server Error"),
-            @ApiResponse(responseCode = "400", description = "The request is bad or invalid"),
-            @ApiResponse(responseCode = "404", description = "The resource URL was not found on the server"),
-            @ApiResponse(responseCode = "403", description = "You are not authorized. Please authenticate and try again"),
-            @ApiResponse(responseCode = "401", description = "You don't have permission to this resource")
-    })
-    @PostMapping("/login")
-    public ResponseEntity<TokenInformation> login(@ApiParam(value = "Please Enter username")
-                                                  @RequestParam(value = "username") String username,
-                                                  @ApiParam(value = "Please Enter password")
-                                                  @RequestParam(value = "password") String password) {
-        authenticate(username, password);
-        var loginUser = userService.findUserByUsername(username);
-        var userPrincipal = new UserPrincipal(loginUser);
-        var jwtHeader = getJwtHeader(userPrincipal);
-        var information = getJwtInfo(userPrincipal);
-        return new ResponseEntity<>(information, jwtHeader, OK);
-    }
-
-    @ApiOperation(value = "User Information", notes = "Add a new user information into the system", response = User.class)
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Information fetched successfully"),
-            @ApiResponse(responseCode = "201", description = "Information fetched successfully"),
-            @ApiResponse(responseCode = "500", description = "Internal Server Error"),
-            @ApiResponse(responseCode = "400", description = "The request is bad or invalid"),
-            @ApiResponse(responseCode = "404", description = "The resource URL was not found on the server"),
-            @ApiResponse(responseCode = "403", description = "You are not authorized. Please authenticate and try again"),
-            @ApiResponse(responseCode = "401", description = "You don't have permission to this resource")
-    })
-    @PreAuthorize("hasAuthority('user:read')")
-    @GetMapping(path = "/me")
-    public ResponseEntity<User> currentUserInfo(@ApiParam(value = "Please do not pass the token if you are already authorized")
-                                                @RequestHeader(value = "Authorization", required = false) String authToken) {
-        var token = authToken.substring(TOKEN_PREFIX.length());
-        String user = jwtTokenProvider.getSubject(token);
-        User userObject = userService.findUserByUsername(user);
-        return new ResponseEntity<>(userObject, null, OK);
-    }
-
-    private void authenticate(String username, String password) {
-        authenticationManager
-                .authenticate(new UsernamePasswordAuthenticationToken(username, password));
     }
 
 
@@ -117,58 +59,6 @@ public class UserController extends ExceptionHandling {
         return new ResponseEntity<>("Account is registered Successfully with username " + registeredUser.getUsername() + " , Please Login! ", null, OK);
     }
 
-
-    @ApiOperation(value = "Update an existing User", notes = "Update User by passing in the User information with an existing username and email address", response = UserUpgradeDto.class)
-    @ApiResponses({@ApiResponse(responseCode = "200", description = "The user was updated successfully"),
-            @ApiResponse(responseCode = "400", description = "The request is malformed or invalid"),
-            @ApiResponse(responseCode = "404", description = "The resource URL was not found on the server"),
-            @ApiResponse(responseCode = "500", description = "An internal server error occurred"),
-            @ApiResponse(responseCode = "403", description = "You are not authorized. Please authenticate and try again"),
-            @ApiResponse(responseCode = "401", description = "You don't have permission to this resource")
-    })
-
-    @PreAuthorize("hasAnyAuthority('user:update')")
-    @PostMapping("/update")
-    public ResponseEntity<User> updateUserInfo(@ApiParam(value = "Please provide the username ,firstname ,lastname, email", required = true) @Valid @RequestBody UserUpgradeDto user) throws IOException {
-        User updatedUser = userService.updateUser(user.getCurrentUsername(), user.getNewFirstName(), user.getNewLastName(), user.getCurrentUsername(),
-                user.getNewEmailAddress(), user.getNewRole(), Boolean.parseBoolean(user.getIsNotLocked()), Boolean.parseBoolean(user.getIsActive()));
-        return new ResponseEntity<>(updatedUser, OK);
-    }
-
-
-    @PreAuthorize("hasAnyAuthority('user:create','user:update')")
-    @PostMapping(path = "/unlock")
-    public String unlockUserAccount(@RequestParam(name = "email") String email) {
-        userService.unlockAccount(email);
-        return "account associated with email " + email + " unlock successfully";
-    }
-
-
-    @ApiOperation(value = "Update an existing User Password", notes = "Update User Password by passing in the User information with an existing email address and new password", response = User.class)
-    @ApiResponses({@ApiResponse(responseCode = "200", description = "The password was updated successfully"),
-            @ApiResponse(responseCode = "400", description = "The request is malformed or invalid"),
-            @ApiResponse(responseCode = "404", description = "The resource URL was not found on the server"),
-            @ApiResponse(responseCode = "500", description = "An internal server error occurred"),
-            @ApiResponse(responseCode = "403", description = "You are not authorized. Please authenticate and try again"),
-            @ApiResponse(responseCode = "401", description = "You don't have permission to this resource")
-    })
-    @PreAuthorize("hasAuthority('user:read')")
-    @PostMapping("/updatePassword")
-    public String updateUserPassword(@ApiParam(value = "Enter existing email")
-                                     @RequestParam("email") String email,
-                                     @ApiParam(value = "Enter a new password")
-                                     @RequestParam("password") String password,
-                                     @ApiParam(value = "Do not enter token if you already authorized ")
-                                     @RequestHeader(value = "Authorization", required = false) String authToken
-    ) {
-
-        var token = authToken.substring(TOKEN_PREFIX.length());
-        if (verifyUser(token, email)) {
-            userService.resetPassword(email, password);
-            return "Password is Changed";
-        } else
-            throw new UserNotFoundException("Invalid Email Address " + email);
-    }
 
     @ApiOperation(value = "Find the user by username", notes = "Retrieve User info by passing the username", response = User.class)
     @ApiResponses({@ApiResponse(responseCode = "200", description = "The User against email address"),
@@ -205,40 +95,40 @@ public class UserController extends ExceptionHandling {
         return response(NO_CONTENT, USER_DELETED_SUCCESSFULLY);
     }
 
+    @ApiOperation(value = "Unlock the user with email address", notes = "Unlock Users")
+    @ApiResponses({@ApiResponse(responseCode = "200", description = "The users list generated successfully"),
+            @ApiResponse(responseCode = "400", description = "The request is bad or invalid"),
+            @ApiResponse(responseCode = "404", description = "The resource URL was not found on the server"),
+            @ApiResponse(responseCode = "500", description = "An internal server error occurred"),
+            @ApiResponse(responseCode = "403", description = "You are not authorized. Please authenticate and try again"),
+            @ApiResponse(responseCode = "401", description = "You don't have permission to this resource")
+    })
+    @PreAuthorize("hasAnyAuthority('user:create','user:update')")
+    @PostMapping(path = "/unlock")
+    public String unlockUserAccount(@ApiParam(value = "Enter email to unlock the user") @RequestParam(name = "email") String email) {
+        userService.unlockAccount(email);
+        return "account associated with email " + email + " unlock successfully";
+    }
 
-    /*@GetMapping("/list")
+
+    @ApiOperation(value = "View all registered users in database", notes = "Registered Users List")
+    @ApiResponses({@ApiResponse(responseCode = "200", description = "The users list generated successfully"),
+            @ApiResponse(responseCode = "400", description = "The request is bad or invalid"),
+            @ApiResponse(responseCode = "404", description = "The resource URL was not found on the server"),
+            @ApiResponse(responseCode = "500", description = "An internal server error occurred"),
+            @ApiResponse(responseCode = "403", description = "You are not authorized. Please authenticate and try again"),
+            @ApiResponse(responseCode = "401", description = "You don't have permission to this resource")
+    })
+    @PreAuthorize("hasAuthority('user:create')")
+    @GetMapping("/list")
     public ResponseEntity<List<User>> getAllUsers() {
         List<User> users = userService.getUsers();
         return new ResponseEntity<>(users, OK);
     }
-*/
+
     private ResponseEntity<HttpResponse> response(HttpStatus httpStatus, String message) {
         return new ResponseEntity<>(new HttpResponse(httpStatus.value(), httpStatus, httpStatus.getReasonPhrase().toUpperCase(),
                 message.toUpperCase()), httpStatus);
-    }
-
-    private HttpHeaders getJwtHeader(UserPrincipal userPrincipal) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.add(JWT_TOKEN_HEADER, jwtTokenProvider.generateJwtToken(userPrincipal));
-        return headers;
-    }
-
-    private boolean verifyUser(String token, String email) {
-        String subjectUsername = jwtTokenProvider.getSubject(token);
-        var emailBySubjectUsername = userService.findEmailBySubjectUsername(subjectUsername);
-        return emailBySubjectUsername.equals(email);
-    }
-
-    private TokenInformation getJwtInfo(UserPrincipal userPrincipal) {
-        TokenInformation tokenInfo = new TokenInformation();
-        var token = jwtTokenProvider.generateJwtToken(userPrincipal);
-        var expiryDate = jwtTokenProvider.getTokenExpiryDate(token);
-        var totalLifeTime = expiryDate.getTime() - new Date().getTime();
-        var days = TimeUnit.MILLISECONDS.toDays(totalLifeTime);
-
-        tokenInfo.setToken(token);
-        tokenInfo.setExpiryTime(days + " Days");
-        return tokenInfo;
     }
 
 
