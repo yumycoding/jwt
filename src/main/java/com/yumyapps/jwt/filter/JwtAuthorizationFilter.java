@@ -1,6 +1,7 @@
 package com.yumyapps.jwt.filter;
 
 import com.yumyapps.jwt.jwtutil.JwtTokenProvider;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -20,6 +21,7 @@ import static com.yumyapps.jwt.constants.Constants.OPTIONS_HTTP_METHOD;
 import static com.yumyapps.jwt.constants.Constants.TOKEN_PREFIX;
 
 @Component
+@Slf4j
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider tokenProvider;
@@ -32,25 +34,29 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
-
-        if (request.getMethod().equalsIgnoreCase(OPTIONS_HTTP_METHOD)) {
-            response.setStatus(HttpStatus.OK.value());
-        } else {
-            String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-            if (authorizationHeader == null || !authorizationHeader.startsWith(TOKEN_PREFIX)) {
-                filterChain.doFilter(request, response);
-                return;
-            }
-            String token = authorizationHeader.substring(TOKEN_PREFIX.length());
-            String userName = tokenProvider.getSubject(token);
-            if (tokenProvider.isTokenValid(token, userName) && SecurityContextHolder.getContext().getAuthentication() == null) {
-                List<GrantedAuthority> authorities = tokenProvider.getAuthorities(token);
-                Authentication authentication = tokenProvider.getAuthentication(userName, authorities, request);
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+        try {
+            if (request.getMethod().equalsIgnoreCase(OPTIONS_HTTP_METHOD)) {
+                response.setStatus(HttpStatus.OK.value());
             } else {
-                SecurityContextHolder.clearContext();
+                String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+                if (authorizationHeader == null || !authorizationHeader.startsWith(TOKEN_PREFIX)) {
+                    filterChain.doFilter(request, response);
+                    return;
+                }
+                String token = authorizationHeader.substring(TOKEN_PREFIX.length());
+                String userName = tokenProvider.getSubject(token);
+                if (tokenProvider.isTokenValid(token, userName) && SecurityContextHolder.getContext().getAuthentication() == null) {
+                    List<GrantedAuthority> authorities = tokenProvider.getAuthorities(token);
+                    Authentication authentication = tokenProvider.getAuthentication(userName, authorities, request);
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                } else {
+                    SecurityContextHolder.clearContext();
+                }
             }
+            filterChain.doFilter(request, response);
+        } catch (
+                Exception exception) {
+            log.error(exception.getStackTrace().toString());
         }
-        filterChain.doFilter(request, response);
     }
 }
