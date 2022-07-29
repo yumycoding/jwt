@@ -1,10 +1,10 @@
 package com.yumyapps.jwt.dto;
 
+import com.yumyapps.jwt.validator.StrictPassword;
 import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 // This Dto Used for password update process by user.
 
@@ -13,13 +13,14 @@ public class PasswordUpdateDto {
 
     @NotNull
     @NotEmpty
-    @Size(min = 3)
     private String oldPassword;
+
     @NotEmpty
-    @Size(min = 3)
+    @StrictPassword
     private String newPassword;
+
     @NotEmpty
-    @Size(min = 3)
+    @StrictPassword
     private String matchingPassword;
 
 }

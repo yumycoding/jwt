@@ -62,8 +62,8 @@ public class AuthController extends ExceptionHandling {
     @PostMapping(path = "/register")
     public ResponseEntity<String> registerNewUser(@ApiParam(value = "Please provide the firstName ,lastName ,username, password , email", required = true)
                                                   @Valid @RequestBody UserRegistrationDto user) throws UserNotFoundException, EmailExistException, UsernameExistException {
-    log.info("Register");
-        User registeredUser = userService.register(user.getFirstName(), user.getLastName(), user.getUsername(), user.getEmail(), user.getPassword());
+
+            User registeredUser = userService.register(user.getFirstName(), user.getLastName(), user.getUsername(), user.getEmail(), user.getPassword(), user.getMatchingPassword());
         return new ResponseEntity<>("Account is registered Successfully with username " + registeredUser.getUsername() + " , Please Login! ", null, OK);
     }
 

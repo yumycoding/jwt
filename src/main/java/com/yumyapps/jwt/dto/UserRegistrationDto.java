@@ -1,13 +1,12 @@
 package com.yumyapps.jwt.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.yumyapps.jwt.validator.StrictPassword;
+import com.yumyapps.jwt.validator.ValidEmail;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 
 @Data
 public class UserRegistrationDto {
@@ -27,14 +26,19 @@ public class UserRegistrationDto {
     @ApiModelProperty(value = "Please enter desired username", example = "johndao")
     private String username;
 
-    @NotNull
     @NotEmpty
+    @StrictPassword
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @Size(min = 8)
     private String password;
 
-    @NotNull
-    @Email
+
+    @NotEmpty
+    @StrictPassword
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private String matchingPassword;
+
+    @NotEmpty
+    @ValidEmail
     @ApiModelProperty(value = "please Enter your email address", example = "john@yumyapps.com")
     private String email;
 

@@ -8,6 +8,10 @@ public class Constants {
     public static final String[] MANAGER_AUTHORITIES = {"user:read", "user:update"};
     public static final String[] ADMIN_AUTHORITIES = {"user:read", "user:create", "user:update"};
     public static final String[] SUPER_ADMIN_AUTHORITIES = {"user:read", "user:create", "user:update", "user:delete"};
+    // Constraint Validation
+
+    public static final String INVALID_PASSWORD = "The given password is invalid, please add 2 numeric and one special character like '%s'";
+    public static final String INVALID_EMAIL = "The given email is invalid, must be a well-formed email address";
 
     // Exception Constants
     public static final String VALIDATION_FAILED = "Data Validation occurred.";
@@ -35,7 +39,7 @@ public class Constants {
     public static final String FORBIDDEN_MESSAGE = "You need to log in to access this page";
     public static final String ACCESS_DENIED_MESSAGE = "You do not have permission to access this page";
     public static final String OPTIONS_HTTP_METHOD = "OPTIONS";
-   public static final String[] PUBLIC_URLS = {"/v1/auth/login", "/v1/auth/register", "/v1/users/image/**",
+    public static final String[] PUBLIC_URLS = {"/v1/auth/login", "/v1/auth/register", "/v1/users/image/**",
             "/graphiql/**", "/graphql/**", "/swagger-ui/**", "/v2/api-docs", "/swagger-resources/**", "/webjars/**"};
     //public static final String[] PUBLIC_URLS = {"**"};
     public static final String[] OPEN_API_URLS = {"/v2/api-docs", "/swagger-resources/**", "/swagger-ui/**", "/webjars/**"};

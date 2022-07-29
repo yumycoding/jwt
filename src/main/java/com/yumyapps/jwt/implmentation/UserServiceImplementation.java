@@ -27,6 +27,7 @@ import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import static com.yumyapps.jwt.constants.Constants.*;
 import static com.yumyapps.jwt.enumeration.Role.ROLE_SUPER_ADMIN;
@@ -49,6 +50,15 @@ public class UserServiceImplementation implements UserService, UserDetailsServic
         this.passwordEncoder = passwordEncoder;
         this.loginAttemptService = loginAttemptService;
 
+    }
+
+    @Override
+    public User findUserByUserId(String uuId) {
+        User user = null;
+        if (StringUtils.isNotEmpty(uuId)) {
+            user = userRepository.findByUserId(uuId).orElseThrow(() -> new UserNotFoundException("Invalid User Id"));
+        }
+        return user;
     }
 
     @Override
@@ -98,10 +108,10 @@ public class UserServiceImplementation implements UserService, UserDetailsServic
     }
 
     @Override
-    public User register(String firstName, String lastName, String username, String email, String password) throws UserNotFoundException, EmailExistException, UsernameExistException {
+    public User register(String firstName, String lastName, String username, String email, String password, String retypePassword) throws UserNotFoundException, EmailExistException, UsernameExistException {
         User user = new User();
-        validateNewUserAndEmail(EMPTY, username, email);
-
+        validateStrictPassword(password, retypePassword, username);
+        validateNewEmail(email);
         try {
             user.setUserId(generatedUserId());
             user.setFirstName(firstName);
@@ -209,10 +219,9 @@ public class UserServiceImplementation implements UserService, UserDetailsServic
     @Override
     public boolean updatePassword(UsernamePasswordAuthenticationToken token, PasswordUpdateDto updateDto) {
 
-        if (!updateDto.getNewPassword().equals(updateDto.getMatchingPassword())) {
-            log.error("the given password does not match from the user {}", token.getPrincipal());
-            throw new PassowrdNotMatchException(PASSWORD_DO_NOT_MATCH);
-        }
+        validateStrictPassword(updateDto.getNewPassword(), updateDto.getMatchingPassword(),
+                token.getPrincipal().toString());
+
         if (updateDto.getOldPassword().equals(updateDto.getNewPassword())) {
             log.error("old password and new passwords are same from the user {}", token.getPrincipal());
             throw new OldPasswordDenialException(OLD_PASSWORD_DENIED);
@@ -272,6 +281,15 @@ public class UserServiceImplementation implements UserService, UserDetailsServic
     }
 
 
+    private void validateStrictPassword(String firstPassword, String secondPassword, String username) {
+        if (StringUtils.isNotEmpty(firstPassword) && StringUtils.isNotEmpty(secondPassword)) {
+            if (!firstPassword.equals(secondPassword)) {
+                log.error("the given password does not match from the user {}", username);
+                throw new PassowrdNotMatchException(PASSWORD_DO_NOT_MATCH);
+            }
+        }
+    }
+
     private boolean verifyPassword(String username, String oldPassword) {
         boolean result = false;
         if (StringUtils.isNotBlank(username) && StringUtils.isNotBlank(oldPassword)) {
@@ -283,7 +301,8 @@ public class UserServiceImplementation implements UserService, UserDetailsServic
 
 
     private String generatedUserId() {
-        return RandomStringUtils.randomNumeric(10);
+//        return RandomStringUtils.randomNumeric(10);
+        return UUID.randomUUID().toString();
     }
 
 
@@ -306,6 +325,7 @@ public class UserServiceImplementation implements UserService, UserDetailsServic
         }
     }
 
+    //method is not in use
     private User validateNewUserAndEmail(String currentUserName, String newUserName, String emailAddress) throws
             UserNotFoundException, UsernameExistException, EmailExistException {
 
@@ -334,6 +354,19 @@ public class UserServiceImplementation implements UserService, UserDetailsServic
 
         }
         return null;
+    }
+
+
+    private void validateNewEmail(String email) {
+
+        if (StringUtils.isNotEmpty(email)) {
+            userRepository.findUserByEmail(email).ifPresent((user -> {
+                log.error("email exist exception while registering a new user");
+                throw new EmailExistException("Email " + email + "already occupied, please try again");
+
+            }));
+        }
+
     }
 
 

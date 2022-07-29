@@ -66,7 +66,7 @@ public class SecurityConfig {
 
 
     @Bean
-    WebSecurityCustomizer webSecurityCustomizer(){
+    WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring().antMatchers(OPEN_API_URLS);
     }
 

@@ -7,10 +7,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 public interface UserService {
 
-    User register(String firstName, String lastName, String username, String email, String password) throws UserNotFoundException, UsernameExistException, EmailExistException;
+    User register(String firstName, String lastName, String username, String email, String password,String retypePassword) throws UserNotFoundException, UsernameExistException, EmailExistException;
 
     List<User> getUsers();
 
@@ -18,6 +19,7 @@ public interface UserService {
 
     User findUserByEmail(String email);
 
+    User findUserByUserId(String id);
     void unlockAccount(String email);
 
     User updateUser(String currentUsername, String newFirstName, String newLastName, String newUsername,
