@@ -34,7 +34,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
-//        try {
+        try {
             if (request.getMethod().equalsIgnoreCase(OPTIONS_HTTP_METHOD)) {
                 response.setStatus(HttpStatus.OK.value());
             } else {
@@ -54,9 +54,9 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                 }
             }
             filterChain.doFilter(request, response);
-//        } catch (
-//                Exception exception) {
-//            log.error(exception.getStackTrace().toString());
-//        }
+        } catch (
+                Exception exception) {
+            log.error(exception.getStackTrace().toString());
+        }
     }
 }

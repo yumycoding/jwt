@@ -10,7 +10,6 @@ import com.yumyapps.jwt.security.UserPrincipal;
 import com.yumyapps.jwt.service.LoginAttemptService;
 import com.yumyapps.jwt.service.UserService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +30,6 @@ import java.util.UUID;
 
 import static com.yumyapps.jwt.constants.Constants.*;
 import static com.yumyapps.jwt.enumeration.Role.ROLE_SUPER_ADMIN;
-import static org.apache.commons.lang3.StringUtils.EMPTY;
 
 @Slf4j
 @Service
@@ -219,7 +217,7 @@ public class UserServiceImplementation implements UserService, UserDetailsServic
     @Override
     public boolean updatePassword(UsernamePasswordAuthenticationToken token, PasswordUpdateDto updateDto) {
 
-        validateStrictPassword(updateDto.getNewPassword(), updateDto.getMatchingPassword(),
+        validateStrictPassword(updateDto.getNewPassword(), updateDto.getConformPassword(),
                 token.getPrincipal().toString());
 
         if (updateDto.getOldPassword().equals(updateDto.getNewPassword())) {

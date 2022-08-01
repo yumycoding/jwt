@@ -51,7 +51,7 @@ public class AuthServiceImplementation implements AuthService {
             user.setFirstName(userDto.getNewFirstName());
             user.setLastName(userDto.getNewLastName());
             User savedUser = userRepository.save(user);
-            log.info("{ }  data updated successfully", userPrinciple);
+            log.info("{}  data updated successfully", userPrinciple);
             return savedUser;
         } catch (Exception e) {
             log.error("invalid firstname or lastname");

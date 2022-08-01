@@ -34,7 +34,7 @@ public class JwtAccessDeniedHandler implements AccessDeniedHandler {
         ObjectMapper mapper = new ObjectMapper();
         mapper.writeValue(outputStream, httpResponse);
         outputStream.flush();
-        log.info("User could not authenticate");
+        log.info("User could not authenticated");
     }
 }
 

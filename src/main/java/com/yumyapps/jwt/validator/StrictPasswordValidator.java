@@ -8,8 +8,6 @@ import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import java.util.Arrays;
 
-import static com.yumyapps.jwt.constants.Constants.INVALID_PASSWORD;
-
 @Slf4j
 public class StrictPasswordValidator implements ConstraintValidator<StrictPassword, String> {
 

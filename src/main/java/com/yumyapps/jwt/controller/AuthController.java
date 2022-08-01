@@ -2,7 +2,6 @@ package com.yumyapps.jwt.controller;
 
 
 import com.yumyapps.jwt.constants.Constants;
-import com.yumyapps.jwt.dto.PasswordUpdateDto;
 import com.yumyapps.jwt.dto.TokenInformation;
 import com.yumyapps.jwt.dto.UserRegistrationDto;
 import com.yumyapps.jwt.dto.UserUpgradeDto;
@@ -25,7 +24,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
@@ -63,7 +61,7 @@ public class AuthController extends ExceptionHandling {
     public ResponseEntity<String> registerNewUser(@ApiParam(value = "Please provide the firstName ,lastName ,username, password , email", required = true)
                                                   @Valid @RequestBody UserRegistrationDto user) throws UserNotFoundException, EmailExistException, UsernameExistException {
 
-            User registeredUser = userService.register(user.getFirstName(), user.getLastName(), user.getUsername(), user.getEmail(), user.getPassword(), user.getMatchingPassword());
+            User registeredUser = userService.register(user.getFirstName(), user.getLastName(), user.getUsername(), user.getEmail(), user.getPassword(), user.getConformPassword());
         return new ResponseEntity<>("Account is registered Successfully with username " + registeredUser.getUsername() + " , Please Login! ", null, OK);
     }
 

@@ -12,16 +12,19 @@ import javax.validation.constraints.*;
 public class UserRegistrationDto {
 
     @NotNull
+    @NotEmpty(message = "first name should not be empty")
     @Size(min = 3, max = 100)
     @ApiModelProperty(value = "Please enter your fist name", example = "John")
     private String firstName;
 
     @NotNull
+    @NotEmpty(message = "last name should not be empty")
     @Size(min = 3, max = 100)
     @ApiModelProperty(value = "Please enter your last name", example = "Dao")
     private String lastName;
 
     @NotNull
+    @NotEmpty(message = "username cannot be empty, please enter a valid username")
     @Size(min = 3, max = 100)
     @ApiModelProperty(value = "Please enter desired username", example = "johndao")
     private String username;
@@ -30,12 +33,11 @@ public class UserRegistrationDto {
     @StrictPassword
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
-
-
+    
     @NotEmpty
     @StrictPassword
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private String matchingPassword;
+    private String conformPassword;
 
     @NotEmpty
     @ValidEmail

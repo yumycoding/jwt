@@ -17,11 +17,3 @@ CMD ["java", "-jar", "/jwt.jar"]
 #EXPOSE 8200
 #COPY build/libs/jwt-1.0.jar /jwt.jar
 #CMD ["java", "-jar", "/jwt.jar"]
-=======
-RUN gradle build -x test --no-daemon 
-
-FROM openjdk:11
-EXPOSE 8200
-COPY --from=build /home/gradle/build/libs/jwt-1.0.jar /jwt.jar
-CMD ["java", "-jar", "/jwt.jar"]
->>>>>>> 59c0fe58b0ff2b9b33282f839dbbc7786aeb7fac

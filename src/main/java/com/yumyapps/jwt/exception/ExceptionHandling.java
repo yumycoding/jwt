@@ -105,16 +105,22 @@ public class ExceptionHandling extends ResponseEntityExceptionHandler implements
     public ResponseEntity<HttpResponse> oldPasswordDenial(OldPasswordDenialException exception) {
         return createHttpResponse(BAD_REQUEST, exception.getMessage());
     }
+
     @ExceptionHandler(PassowrdNotMatchException.class)
     public ResponseEntity<HttpResponse> PasswordNotMatch(PassowrdNotMatchException exception) {
         return createHttpResponse(BAD_REQUEST, exception.getMessage());
     }
 
-        @ExceptionHandler(value = {ConstraintViolationException.class})
-        protected ResponseEntity<Object> handleConstraintViolation(ConstraintViolationException e, WebRequest request) {
-            return handleExceptionInternal(e, e.getMessage(), new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
-        }
+    @ExceptionHandler(value = {ConstraintViolationException.class})
+    protected ResponseEntity<Object> handleConstraintViolation(ConstraintViolationException e, WebRequest request) {
+        return handleExceptionInternal(e, e.getMessage(), new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
+    }
 
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<HttpResponse> nullArgument(IllegalArgumentException exception) {
+        return createHttpResponse(BAD_REQUEST, exception.getMessage());
+    }
 
     //
 //// this exception belongs to application properties -- Throw the Exception If no Handler found

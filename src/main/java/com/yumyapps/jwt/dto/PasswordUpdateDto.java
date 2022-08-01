@@ -21,6 +21,6 @@ public class PasswordUpdateDto {
 
     @NotEmpty
     @StrictPassword
-    private String matchingPassword;
+    private String conformPassword;
 
 }
