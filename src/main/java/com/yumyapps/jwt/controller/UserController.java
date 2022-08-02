@@ -9,7 +9,6 @@ import com.yumyapps.jwt.exception.exceptions.EmailNotFoundException;
 import com.yumyapps.jwt.exception.exceptions.UserNotFoundException;
 import com.yumyapps.jwt.models.User;
 import com.yumyapps.jwt.service.UserService;
-import com.yumyapps.jwt.validator.ValidEmail;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -66,7 +65,7 @@ public class UserController extends ExceptionHandling {
     }
 
 
-    @ApiOperation(value = "Find the user by username", notes = "Retrieve User info by passing the username", response = User.class)
+  /*  @ApiOperation(value = "Find the user by username", notes = "Retrieve User info by passing the username", response = User.class)
     @ApiResponses({@ApiResponse(responseCode = "200", description = "The User against email address"),
             @ApiResponse(responseCode = "400", description = "The request is malformed or invalid"),
             @ApiResponse(responseCode = "404", description = "The resource URL was not found on the server"),
@@ -84,7 +83,7 @@ public class UserController extends ExceptionHandling {
         }
         return new ResponseEntity<>(user, OK);
     }
-
+*/
 
     @ApiOperation(value = "Find the user by ID", notes = "Retrieve User info by passing the user Id", response = User.class)
     @ApiResponses({@ApiResponse(responseCode = "200", description = "The User against User Id"),
@@ -127,7 +126,7 @@ public class UserController extends ExceptionHandling {
     }
 
 
-    @ApiOperation(value = "Delete the user by username", notes = "Delete the user by passing username")
+    @ApiOperation(value = "Delete the user by id", notes = "Delete the user by passing user id")
     @ApiResponses({@ApiResponse(responseCode = "204", description = "The User was deleted successfully"),
             @ApiResponse(responseCode = "400", description = "The request is bad or invalid"),
             @ApiResponse(responseCode = "404", description = "The resource URL was not found on the server"),
@@ -135,11 +134,11 @@ public class UserController extends ExceptionHandling {
             @ApiResponse(responseCode = "403", description = "You are not authorized. Please authenticate and try again"),
             @ApiResponse(responseCode = "401", description = "You don't have permission to this resource")
     })
-    @DeleteMapping("/delete/{username}")
+    @DeleteMapping("/delete/{id}")
     @PreAuthorize("hasAnyAuthority('user:delete')")
     public ResponseEntity<HttpResponse> deleteUser(@ApiParam(value = "please enter username here")
-                                                   @PathVariable("username") String username) throws IOException {
-        userService.deleteUser(username);
+                                                   @PathVariable("id") String id) throws IOException {
+        userService.softDeleteByUUID(id);
         return response(NO_CONTENT, USER_DELETED_SUCCESSFULLY);
     }
 

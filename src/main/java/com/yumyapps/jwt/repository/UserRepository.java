@@ -22,7 +22,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("select u.password from User u where u.username =:username")
     String getPasswordByUsername(String username);
 
-    Optional<User> findByUserId(@NonNull String userId);
+    Optional<User> findByUserId(@NonNull String uuid);
 
 
 }

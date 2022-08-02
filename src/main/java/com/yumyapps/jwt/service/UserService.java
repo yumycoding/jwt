@@ -30,7 +30,7 @@ public interface UserService {
 
     void deleteUser(Long id) throws IOException;
 
-    void deleteUser(String username) throws IOException;
+    void softDeleteByUUID(String username) throws IOException;
 
     void resetPassword(String email, String password) throws EmailNotFoundException, UserNotFoundException;
 

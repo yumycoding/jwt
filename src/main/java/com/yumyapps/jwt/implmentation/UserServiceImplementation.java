@@ -191,8 +191,8 @@ public class UserServiceImplementation implements UserService, UserDetailsServic
     }
 
     @Override // user soft delete method
-    public void deleteUser(String username) {
-        User user = userRepository.findUserByUsername(username).orElseThrow(() -> new UserNotFoundException("Invalid Username"));
+    public void softDeleteByUUID(String uuid) {
+        User user = userRepository.findByUserId(uuid).orElseThrow(() -> new UserNotFoundException("Invalid Username"));
         try {
             user.setActive(false);
             userRepository.save(user);
